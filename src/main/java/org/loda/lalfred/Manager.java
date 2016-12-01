@@ -2,6 +2,7 @@ package org.loda.lalfred;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.ConcurrentMap;
 
 public interface Manager {
 
@@ -12,4 +13,6 @@ public interface Manager {
 	public long getIndexCount();
 
 	public boolean checkIndexed(File f);
+
+	public ConcurrentMap<String, List<File>> showIndexes();
 }

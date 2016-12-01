@@ -26,16 +26,16 @@ public class IndexManager implements Manager {
 	private final ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 	public IndexManager() {
-		if (!indexFile.exists()) {
-			try {
-				boolean r = indexFile.createNewFile();
-				if (!r) {
-					throw new RuntimeException("file not creat");
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		// if (!indexFile.exists()) {
+		// try {
+		// boolean r = indexFile.createNewFile();
+		// if (!r) {
+		// throw new RuntimeException("file not creat");
+		// }
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
+		// }
 
 		for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
 			service.execute(() -> {
@@ -71,6 +71,10 @@ public class IndexManager implements Manager {
 			}
 		}
 		return false;
+	}
+
+	public ConcurrentMap<String, List<File>> showIndexes() {
+		return indexes;
 	}
 
 	private void buildIndex(File f) {

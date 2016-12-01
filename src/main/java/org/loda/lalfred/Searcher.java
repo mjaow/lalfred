@@ -4,5 +4,5 @@ import java.io.File;
 
 public interface Searcher {
 
-	public void search(File root, int depth);
+	public void search(File... bases);
 }
