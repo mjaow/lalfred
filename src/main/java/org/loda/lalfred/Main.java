@@ -14,11 +14,11 @@ public class Main {
 	private static final Manager manager = new IndexManager();
 
 	private static final Searcher searcher = new ProducerConsumerSearcher(manager);
-	// private static final Searcher searcher = new FJSearcher(manager);
+//	 private static final Searcher searcher = new FJSearcher(manager);
 
 	public static void main(String[] args) {
 
-		load("/Users/loda/Documents");
+		load("d://");
 
 		Scanner scanner = new Scanner(System.in);
 		while (scanner.hasNextLine()) {

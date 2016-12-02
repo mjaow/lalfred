@@ -18,19 +18,7 @@ public class ProducerConsumerSearcher implements Searcher {
 		for (int i = 0; i < futures.length; i++) {
 			final File dir = bases[i];
 			futures[i] = CompletableFuture.runAsync(() -> {
-				File[] files = dir.listFiles(f -> {
-					return !f.isHidden();
-				});
-
-				if (files != null) {
-					for (File f : files) {
-						if (f.isDirectory()) {
-							search(f);
-						} else if (!manager.checkIndexed(f)) {
-							manager.putToFilePool(f);
-						}
-					}
-				}
+				searchRecursive(dir);
 			});
 		}
 
@@ -40,6 +28,22 @@ public class ProducerConsumerSearcher implements Searcher {
 			System.out.println("finished!cost " + cost + " ms");
 		});
 
+	}
+
+	private void searchRecursive(File root) {
+		File[] files = root.listFiles(f -> {
+			return !f.isHidden();
+		});
+
+		if (files != null) {
+			for (File f : files) {
+				if (f.isDirectory()) {
+					searchRecursive(f);
+				} else if (!manager.checkIndexed(f)) {
+					manager.putToFilePool(f);
+				}
+			}
+		}
 	}
 
 }

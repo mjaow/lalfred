@@ -4,11 +4,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-public class TimeCounterHandler<T> implements InvocationHandler {
+public class TimerHandler<T> implements InvocationHandler {
 	
 	private T target;
 	
-	public TimeCounterHandler(T target) {
+	public TimerHandler(T target) {
 		super();
 		this.target = target;
 	}

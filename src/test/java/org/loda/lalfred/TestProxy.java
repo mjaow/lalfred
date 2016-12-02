@@ -6,7 +6,7 @@ public class TestProxy {
 
 	@Test
 	public void testSearchProxy() {
-		ISearcher searcher = new TimeCounterHandler<>(new DemoSearcher()).getProxy();
+		ISearcher searcher = new TimerHandler<>(new DemoSearcher()).getProxy();
 
 		searcher.sayName("jack");
 	}
