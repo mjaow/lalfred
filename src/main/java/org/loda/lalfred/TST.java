@@ -112,34 +112,36 @@ public class TST<V> {
 		return size;
 	}
 
-	public Iterable<String> keys() {
+	public List<String> keys() {
 		return keysWithPrefix("");
 	}
 
-	public Iterable<String> keysThatMatch(String pattern) {
+	public List<String> keysThatMatch(String pattern) {
 		List<String> list = new ArrayList<>();
-		keysThatMatch(root, pattern, list);
+		keysThatMatch(root, pattern, 0, list);
 		return list;
 	}
 
-	private void keysThatMatch(Node node, String pattern, List<String> list) {
-		if (node == null) {
-			return;
-		}
-
-//		char c = key.charAt(index);
-//		if (c > node.ch) {
-//			return get(key, node.right, index);
-//		} else if (c < node.ch) {
-//			return get(key, node.left, index);
-//		} else if (!reachEnd(key, index)) {
-//			return get(key, node.mid, index + 1);
-//		} else {
-//			return node;
-//		}
+	private void keysThatMatch(Node node, String key, int index, List<String> list) {
+		// if (node == null) {
+		// return;
+		// }
+		//
+		// char c = key.charAt(index);
+		// if (c == '.') {
+		// keysThatMatch(node, key, index + 1, list);
+		// } else if (c > node.ch) {
+		// keysThatMatch(node.right, key, index, list);
+		// } else if (c < node.ch) {
+		// keysThatMatch(node.left, key, index, list);
+		// } else if (!reachEnd(key, index)) {
+		// keysThatMatch(node.mid, key, index + 1, list);
+		// } else if (node.val != null) {
+		// list.add();
+		// }
 	}
 
-	public Iterable<String> keysWithPrefix(String prefix) {
+	public List<String> keysWithPrefix(String prefix) {
 		Node node = get(prefix, root, 0);
 		if (node == null) {
 			return Collections.emptyList();

@@ -1,6 +1,7 @@
 package org.loda.lalfred;
 
 import java.io.File;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -14,11 +15,11 @@ public class Main {
 	private static final Manager manager = new IndexManager();
 
 	private static final Searcher searcher = new ProducerConsumerSearcher(manager);
-//	 private static final Searcher searcher = new FJSearcher(manager);
+	// private static final Searcher searcher = new FJSearcher(manager);
 
 	public static void main(String[] args) {
 
-		load("d://");
+		load("/Users/loda/Documents");
 
 		Scanner scanner = new Scanner(System.in);
 		while (scanner.hasNextLine()) {
@@ -31,7 +32,9 @@ public class Main {
 				});
 				System.out.println();
 			} else {
-				System.out.println(manager.getByKey(line));
+				List<File> list = manager.getByPrefix(line, 10);
+				System.out.println("size " + list.size());
+				System.out.println(list);
 			}
 		}
 		scanner.close();

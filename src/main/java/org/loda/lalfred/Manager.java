@@ -10,6 +10,12 @@ public interface Manager {
 
 	public List<File> getByKey(String key);
 
+	public List<File> getByKey(String key, int limit);
+
+	public List<File> getByPrefix(String prefix);
+
+	public List<File> getByPrefix(String prefix, int limit);
+
 	public long getIndexCount();
 
 	public boolean checkIndexed(File f);

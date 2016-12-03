@@ -28,4 +28,11 @@ public class Assert {
 			throw new IllegalArgumentException("must be null");
 		}
 	}
+
+	public static void isNoNegative(Number num) {
+		notNull(num);
+		if (num.doubleValue() < 0) {
+			throw new IllegalArgumentException("must be an no negative number");
+		}
+	}
 }

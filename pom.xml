@@ -17,5 +17,20 @@
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.belerweb</groupId>
+			<artifactId>pinyin4j</artifactId>
+			<version>2.5.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.wltea.analyzer</groupId>
+			<artifactId>IKAnalyzer</artifactId>
+			<version>2012F</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/IKAnalyzer2012_FF.jar</systemPath>
+		</dependency>
+
 	</dependencies>
 </project>

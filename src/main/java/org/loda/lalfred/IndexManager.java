@@ -2,6 +2,8 @@ package org.loda.lalfred;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -13,17 +15,23 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.LongAdder;
 
+import org.loda.lalfred.util.Assert;
+import org.wltea.analyzer.core.IKSegmenter;
+import org.wltea.analyzer.core.Lexeme;
+
 public class IndexManager implements Manager {
 
 	private final File indexFile = new File("d://.lafred");
 
 	private final ConcurrentMap<String, List<File>> indexes = new ConcurrentHashMap<>();
 
+	private TST<String> trie = new TST<>();
+
 	private final LongAdder count = new LongAdder();
 
 	private final BlockingQueue<File> queue = new LinkedBlockingQueue<>();
 
-	private final ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+	private final ExecutorService singleService = Executors.newSingleThreadExecutor();
 
 	public IndexManager() {
 		// if (!indexFile.exists()) {
@@ -37,11 +45,9 @@ public class IndexManager implements Manager {
 		// }
 		// }
 
-		for (int i = 0; i < Runtime.getRuntime().availableProcessors(); i++) {
-			service.execute(() -> {
-				getAndBuildIndex();
-			});
-		}
+		singleService.execute(() -> {
+			getAndBuildIndex();
+		});
 	}
 
 	public void putToFilePool(File f) {
@@ -54,7 +60,11 @@ public class IndexManager implements Manager {
 
 	@Override
 	public List<File> getByKey(String key) {
-		List<File> files = indexes.get(key);
+		String s = trie.get(key);
+		if (s == null) {
+			return Collections.emptyList();
+		}
+		List<File> files = indexes.get(s);
 		return files == null ? Collections.emptyList() : files;
 	}
 
@@ -80,7 +90,28 @@ public class IndexManager implements Manager {
 	private void buildIndex(File f) {
 		indexes.putIfAbsent(f.getName(), createEmptyList());
 		indexes.get(f.getName()).add(f);
+		trie.put(f.getName(), f.getName());
+
+		for (String text : getTokens(f.getName())) {
+			trie.put(text, f.getName());
+		}
+
 		count.increment();
+	}
+
+	private List<String> getTokens(String text) {
+		List<String> list = new ArrayList<>();
+		IKSegmenter seg = new IKSegmenter(new StringReader(text), true);
+		try {
+			Lexeme lexeme;
+			while ((lexeme = seg.next()) != null) {
+				list.add(lexeme.getLexemeText());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return Collections.emptyList();
+		}
+		return list;
 	}
 
 	private List<File> createEmptyList() {
@@ -97,6 +128,44 @@ public class IndexManager implements Manager {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@Override
+	public List<File> getByPrefix(String prefix) {
+		List<String> list = trie.keysWithPrefix(prefix);
+		List<File> search = new ArrayList<>();
+		for (String key : list) {
+			List<File> fs = indexes.get(key);
+			if (fs != null) {
+				search.addAll(fs);
+			}
+		}
+
+		return search;
+	}
+
+	private <T> List<T> filterList(List<T> list, int limit) {
+		Assert.isNoNegative(limit);
+		if (limit == 0) {
+			return Collections.emptyList();
+		}
+
+		List<T> newList = new ArrayList<>();
+		for (int i = 0; i < limit && i < list.size(); i++) {
+			newList.add(list.get(i));
+		}
+
+		return newList;
+	}
+
+	@Override
+	public List<File> getByKey(String key, int limit) {
+		return filterList(getByKey(key), limit);
+	}
+
+	@Override
+	public List<File> getByPrefix(String prefix, int limit) {
+		return filterList(getByPrefix(prefix), limit);
 	}
 
 }
