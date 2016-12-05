@@ -18,21 +18,11 @@ public class Pinyin {
 
 	public static String hanyuToPinyin(String str, String separator) {
 		try {
-			return PinyinHelper.convertToPinyinString(preprocess(str), separator, PinyinFormat.WITHOUT_TONE);
+			return PinyinHelper.convertToPinyinString(str, separator, PinyinFormat.WITHOUT_TONE);
 		} catch (PinyinException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	private static String preprocess(String str) {
-		if (str == null) {
-			return null;
-		}
-		StringBuilder builder = new StringBuilder();
-
-		for (char ch : str.toCharArray()) {
-		}
-		return null;
-	}
 }

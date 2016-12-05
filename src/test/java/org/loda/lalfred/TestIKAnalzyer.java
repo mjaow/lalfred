@@ -11,13 +11,13 @@ public class TestIKAnalzyer {
 //dsp|投放|引擎|设计|1.0-|完整版|docx|
 	@Test
 	public void testIk() {
-		IKSegmenter seg = new IKSegmenter(new StringReader("DSP投放引擎设计1.0-完整版.docx"), true);
+		IKSegmenter seg = new IKSegmenter(new StringReader("我在中国，我爱中国12a[qb爱心"), true);
 
 		try {
 			Lexeme lexeme;
 			while ((lexeme = seg.next()) != null) {
 				String text = lexeme.getLexemeText();
-				System.out.print(text + "|");
+				System.out.print(text +"("+lexeme.getLexemeTypeString()+")"+ "|");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

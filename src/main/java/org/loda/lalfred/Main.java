@@ -19,18 +19,13 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		load("E:\\");
+		load("/Users/loda/Movies/movie");
 
 		Scanner scanner = new Scanner(System.in);
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
 			if ("ct".equals(line)) {
 				System.out.println(manager.getIndexCount());
-			} else if ("tt".equals(line)) {
-				manager.showIndexes().forEach((k, v) -> {
-					System.out.println(k + "=" + v);
-				});
-				System.out.println();
 			} else {
 				List<File> list = manager.getByPrefix(line, 10);
 				System.out.println("size " + list.size());

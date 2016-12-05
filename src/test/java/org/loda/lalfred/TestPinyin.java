@@ -12,9 +12,9 @@ public class TestPinyin {
 
 	@Test
 	public void testPy() throws PinyinException, FileNotFoundException {
-		String name = "长者 你好";
-//		PinyinHelper.addMutilPinyinDict("src/main/resources/user_multi_pinyin.dict");
-		String s = PinyinHelper.convertToPinyinString(name, "\n", PinyinFormat.WITHOUT_TONE);
+		String text = "干什么heee";
+		// PinyinHelper.addMutilPinyinDict("src/main/resources/user_multi_pinyin.dict");
+		String s = PinyinHelper.convertToPinyinString(text, "", PinyinFormat.WITHOUT_TONE);
 		System.out.println(s);
 	}
 }

@@ -1,7 +1,7 @@
 package org.loda.lalfred;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.loda.lalfred.util.Assert;
@@ -18,7 +18,7 @@ public class TST<V> {
 
 	class Node {
 		char ch;
-		V val;
+		List<V> val;
 		Node left;
 		Node mid;
 		Node right;
@@ -54,17 +54,18 @@ public class TST<V> {
 		} else {
 			if (node.val == null) {
 				size++;
+				node.val = new LinkedList<>();
 			}
-			node.val = value;
+			node.val.add(value);
 		}
 
 		return node;
 	}
 
-	public V get(String key) {
+	public List<V> get(String key) {
 		Assert.notNull(key);
 		Node n = get(key, root, 0);
-		return n == null ? null : n.val;
+		return n == null ? Collections.emptyList() : n.val;
 	}
 
 	private Node get(String key, Node node, int index) {
@@ -117,7 +118,7 @@ public class TST<V> {
 	}
 
 	public List<String> keysThatMatch(String pattern) {
-		List<String> list = new ArrayList<>();
+		List<String> list = new LinkedList<>();
 		keysThatMatch(root, pattern, 0, list);
 		return list;
 	}
@@ -146,7 +147,7 @@ public class TST<V> {
 		if (node == null) {
 			return Collections.emptyList();
 		}
-		List<String> list = new ArrayList<>();
+		List<String> list = new LinkedList<>();
 		if (node.val != null) {
 			list.add(prefix);
 		}
@@ -176,9 +177,9 @@ public class TST<V> {
 		if (node == null) {
 			return Collections.emptyList();
 		}
-		List<V> list = new ArrayList<>();
+		List<V> list = new LinkedList<>();
 		if (node.val != null) {
-			list.add(node.val);
+			list.addAll(node.val);
 		}
 		if (!prefix.isEmpty()) {
 			node = node.mid;
@@ -193,7 +194,7 @@ public class TST<V> {
 		}
 
 		if (node.val != null) {
-			list.add(node.val);
+			list.addAll(node.val);
 		}
 
 		valuesWithPrefix(node.left, prefix, list);
