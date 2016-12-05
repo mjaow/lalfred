@@ -19,7 +19,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		load("/Users/loda/Documents");
+		load("E:\\");
 
 		Scanner scanner = new Scanner(System.in);
 		while (scanner.hasNextLine()) {

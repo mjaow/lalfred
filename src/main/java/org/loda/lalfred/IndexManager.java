@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -15,7 +18,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.LongAdder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.loda.lalfred.util.Assert;
+import org.loda.lalfred.util.Pinyin;
 import org.wltea.analyzer.core.IKSegmenter;
 import org.wltea.analyzer.core.Lexeme;
 
@@ -32,6 +37,8 @@ public class IndexManager implements Manager {
 	private final BlockingQueue<File> queue = new LinkedBlockingQueue<>();
 
 	private final ExecutorService singleService = Executors.newSingleThreadExecutor();
+
+	private static final String PINYIN_SEPARATOR = "\n";
 
 	public IndexManager() {
 		// if (!indexFile.exists()) {
@@ -93,10 +100,18 @@ public class IndexManager implements Manager {
 		trie.put(f.getName(), f.getName());
 
 		for (String text : getTokens(f.getName())) {
-			trie.put(text, f.getName());
+			String[] arr = StringUtils.split(getPinyin(text), PINYIN_SEPARATOR);
+
+			for (String s : arr) {
+				trie.put(s, f.getName());
+			}
 		}
 
 		count.increment();
+	}
+
+	private String getPinyin(String text) {
+		return Pinyin.hanyuToPinyin(text, PINYIN_SEPARATOR);
 	}
 
 	private List<String> getTokens(String text) {

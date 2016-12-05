@@ -8,10 +8,10 @@ import org.wltea.analyzer.core.IKSegmenter;
 import org.wltea.analyzer.core.Lexeme;
 
 public class TestIKAnalzyer {
-
+//dsp|投放|引擎|设计|1.0-|完整版|docx|
 	@Test
 	public void testIk() {
-		IKSegmenter seg = new IKSegmenter(new StringReader("编程之美.pdf"), true);
+		IKSegmenter seg = new IKSegmenter(new StringReader("DSP投放引擎设计1.0-完整版.docx"), true);
 
 		try {
 			Lexeme lexeme;
