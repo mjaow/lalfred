@@ -11,7 +11,7 @@ public class TestIKAnalzyer {
 
 	@Test
 	public void testIk() {
-		IKSegmenter seg = new IKSegmenter(new StringReader("编程之美"), true);
+		IKSegmenter seg = new IKSegmenter(new StringReader("编程之美.pdf"), true);
 
 		try {
 			Lexeme lexeme;

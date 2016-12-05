@@ -87,7 +87,7 @@ public class IndexManager implements Manager {
 		return indexes;
 	}
 
-	private void buildIndex(File f) {
+	public void buildIndex(File f) {
 		indexes.putIfAbsent(f.getName(), createEmptyList());
 		indexes.get(f.getName()).add(f);
 		trie.put(f.getName(), f.getName());
@@ -132,7 +132,7 @@ public class IndexManager implements Manager {
 
 	@Override
 	public List<File> getByPrefix(String prefix) {
-		List<String> list = trie.keysWithPrefix(prefix);
+		List<String> list = trie.valuesWithPrefix(prefix);
 		List<File> search = new ArrayList<>();
 		for (String key : list) {
 			List<File> fs = indexes.get(key);

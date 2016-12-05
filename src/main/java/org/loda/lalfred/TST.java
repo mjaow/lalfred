@@ -171,6 +171,36 @@ public class TST<V> {
 		keysWithPrefix(node.mid, prefix + node.ch, list);
 	}
 
+	public List<V> valuesWithPrefix(String prefix) {
+		Node node = get(prefix, root, 0);
+		if (node == null) {
+			return Collections.emptyList();
+		}
+		List<V> list = new ArrayList<>();
+		if (node.val != null) {
+			list.add(node.val);
+		}
+		if (!prefix.isEmpty()) {
+			node = node.mid;
+		}
+		valuesWithPrefix(node, prefix, list);
+		return list;
+	}
+
+	private void valuesWithPrefix(Node node, String prefix, List<V> list) {
+		if (node == null) {
+			return;
+		}
+
+		if (node.val != null) {
+			list.add(node.val);
+		}
+
+		valuesWithPrefix(node.left, prefix, list);
+		valuesWithPrefix(node.right, prefix, list);
+		valuesWithPrefix(node.mid, prefix + node.ch, list);
+	}
+
 	public String longestPrefixOf(String prefix) {
 		String longest = null;
 		for (String s : keysWithPrefix(prefix)) {

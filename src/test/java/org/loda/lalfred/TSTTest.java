@@ -16,6 +16,7 @@ public class TSTTest {
 		tst.put("python", 5);
 		tst.put("c++", 3);
 		tst.put("c", 8);
+		tst.put("编程", 33);
 
 		Assert.equal(tst.get("java"), 1);
 		Assert.equal(tst.get("php"), 6);
@@ -23,11 +24,12 @@ public class TSTTest {
 		Assert.equal(tst.get("c#"), 4);
 		Assert.notNull(tst.get("c++"));
 
-		Assert.equal(tst.size(), 6);
+		Assert.equal(tst.size(), 7);
 
 		System.out.println(tst.keysWithPrefix("c"));
 
 		Assert.isNull(tst.longestPrefixOf("cc"));
 		Assert.equal(tst.longestPrefixOf("c"), "c++");
+		Assert.equal(tst.get("编程"), 33);
 	}
 }
