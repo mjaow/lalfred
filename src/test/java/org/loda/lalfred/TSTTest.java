@@ -1,10 +1,6 @@
 package org.loda.lalfred;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
-import org.loda.lalfred.util.Assert;
 
 public class TSTTest {
 
@@ -12,6 +8,7 @@ public class TSTTest {
 	public void testTST() {
 		TST<Integer> tst = new TST<>();
 		tst.put("java", 1);
+		tst.put("java数据结构", 3);
 		tst.put("php", 2);
 		tst.put("python", 3);
 		tst.put("c#", 4);
@@ -28,9 +25,12 @@ public class TSTTest {
 		System.out.println(tst.get("c++"));
 
 		System.out.println(tst.keysWithPrefix("c"));
+		
+		System.out.println(tst.valuesWithPrefix("java"));
 
 //		Assert.isNull(tst.longestPrefixOf("cc"));
 //		Assert.equal(tst.longestPrefixOf("c"), "c++");
 //		Assert.equal(tst.get("编程"), 33);
 	}
+	
 }

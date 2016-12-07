@@ -20,7 +20,12 @@ public class Assert {
 		if (!a.equals(b)) {
 			throw new IllegalArgumentException(a + " and " + b + " are not equal");
 		}
+	}
 
+	public static void notEqual(Object a, Object b) {
+		if (a.equals(b)) {
+			throw new IllegalArgumentException(a + " and " + b + " are equal");
+		}
 	}
 
 	public static void isNull(Object o) {

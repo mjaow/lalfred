@@ -1,15 +1,20 @@
 package org.loda.lalfred;
 
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.loda.lalfred.util.Assert;
 
 /**
  * 三项查找树
  * 
  * 比R项更加节省空间。由于本项目中需要存储英文单词和中文汉字，所以需要一张较大的字符表，采用三项查找树不会引发内存巨大消耗
+ * 
+ * 改进：前缀树+倒排索引结构
+ * 
+ * 当用户输入某个单词的首字母时，前缀树可以搜到对应的单词，利用倒排索引可以根据这个单词查到他所属的文件
  * 
  * @author minjun
  *
@@ -18,7 +23,7 @@ public class TST<V> {
 
 	class Node {
 		char ch;
-		List<V> val;
+		Set<V> val;
 		Node left;
 		Node mid;
 		Node right;
@@ -34,9 +39,17 @@ public class TST<V> {
 
 	private int size;
 
+	private <E> Set<E> newSet() {
+		return new HashSet<>();
+	}
+
+	private String lowerCase(String s) {
+		return StringUtils.lowerCase(s);
+	}
+
 	public void put(String key, V value) {
 		Assert.notNull(key);
-		root = put(key, value, root, 0);
+		root = put(lowerCase(key), value, root, 0);
 	}
 
 	private Node put(String key, V value, Node node, int index) {
@@ -54,7 +67,7 @@ public class TST<V> {
 		} else {
 			if (node.val == null) {
 				size++;
-				node.val = new LinkedList<>();
+				node.val = newSet();
 			}
 			node.val.add(value);
 		}
@@ -62,10 +75,10 @@ public class TST<V> {
 		return node;
 	}
 
-	public List<V> get(String key) {
+	public Set<V> get(String key) {
 		Assert.notNull(key);
-		Node n = get(key, root, 0);
-		return n == null ? Collections.emptyList() : n.val;
+		Node n = get(lowerCase(key), root, 0);
+		return n == null ? Collections.emptySet() : n.val;
 	}
 
 	private Node get(String key, Node node, int index) {
@@ -94,7 +107,7 @@ public class TST<V> {
 
 	public void delete(String key) {
 		Assert.notNull(key);
-		delete(key, root, 0);
+		delete(lowerCase(key), root, 0);
 	}
 
 	private void delete(String key, Node node, int index) {
@@ -113,17 +126,17 @@ public class TST<V> {
 		return size;
 	}
 
-	public List<String> keys() {
+	public Set<String> keys() {
 		return keysWithPrefix("");
 	}
 
-	public List<String> keysThatMatch(String pattern) {
-		List<String> list = new LinkedList<>();
-		keysThatMatch(root, pattern, 0, list);
-		return list;
+	public Set<String> keysThatMatch(String pattern) {
+		Set<String> set = newSet();
+		keysThatMatch(root, lowerCase(pattern), 0, set);
+		return set;
 	}
 
-	private void keysThatMatch(Node node, String key, int index, List<String> list) {
+	private void keysThatMatch(Node node, String key, int index, Set<String> set) {
 		// if (node == null) {
 		// return;
 		// }
@@ -142,64 +155,66 @@ public class TST<V> {
 		// }
 	}
 
-	public List<String> keysWithPrefix(String prefix) {
+	public Set<String> keysWithPrefix(String prefix) {
+		prefix = lowerCase(prefix);
 		Node node = get(prefix, root, 0);
 		if (node == null) {
-			return Collections.emptyList();
+			return Collections.emptySet();
 		}
-		List<String> list = new LinkedList<>();
+		Set<String> set = newSet();
 		if (node.val != null) {
-			list.add(prefix);
+			set.add(prefix);
 		}
 		if (!prefix.isEmpty()) {
 			node = node.mid;
 		}
-		keysWithPrefix(node, prefix, list);
-		return list;
+		keysWithPrefix(node, prefix, set);
+		return set;
 	}
 
-	private void keysWithPrefix(Node node, String prefix, List<String> list) {
+	private void keysWithPrefix(Node node, String prefix, Set<String> set) {
 		if (node == null) {
 			return;
 		}
 
 		if (node.val != null) {
-			list.add(prefix + node.ch);
+			set.add(prefix + node.ch);
 		}
 
-		keysWithPrefix(node.left, prefix, list);
-		keysWithPrefix(node.right, prefix, list);
-		keysWithPrefix(node.mid, prefix + node.ch, list);
+		keysWithPrefix(node.left, prefix, set);
+		keysWithPrefix(node.right, prefix, set);
+		keysWithPrefix(node.mid, prefix + node.ch, set);
 	}
 
-	public List<V> valuesWithPrefix(String prefix) {
+	public Set<V> valuesWithPrefix(String prefix) {
+		prefix = lowerCase(prefix);
 		Node node = get(prefix, root, 0);
 		if (node == null) {
-			return Collections.emptyList();
+			return Collections.emptySet();
 		}
-		List<V> list = new LinkedList<>();
+		Set<V> set = newSet();
 		if (node.val != null) {
-			list.addAll(node.val);
+			set.addAll(node.val);
 		}
 		if (!prefix.isEmpty()) {
 			node = node.mid;
 		}
-		valuesWithPrefix(node, prefix, list);
-		return list;
+		valuesWithPrefix(node, prefix, set);
+		return set;
 	}
 
-	private void valuesWithPrefix(Node node, String prefix, List<V> list) {
+	private void valuesWithPrefix(Node node, String prefix, Set<V> set) {
 		if (node == null) {
 			return;
 		}
 
 		if (node.val != null) {
-			list.addAll(node.val);
+			set.addAll(node.val);
 		}
 
-		valuesWithPrefix(node.left, prefix, list);
-		valuesWithPrefix(node.right, prefix, list);
-		valuesWithPrefix(node.mid, prefix + node.ch, list);
+		valuesWithPrefix(node.left, prefix, set);
+		valuesWithPrefix(node.right, prefix, set);
+		valuesWithPrefix(node.mid, prefix + node.ch, set);
 	}
 
 	public String longestPrefixOf(String prefix) {

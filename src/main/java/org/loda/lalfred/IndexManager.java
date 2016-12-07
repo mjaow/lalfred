@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,18 +59,12 @@ public class IndexManager implements Manager {
 	}
 
 	@Override
-	public List<File> getByKey(String key) {
-		return trie.get(key);
-	}
-
-	@Override
 	public long getIndexCount() {
 		return count.longValue();
 	}
 
 	public boolean checkIndexed(File f) {
-		List<File> files = getByKey(f.getName());
-		for (File indexFile : files) {
+		for (File indexFile : trie.get(f.getName())) {
 			if (f.equals(indexFile)) {
 				return true;
 			}
@@ -120,33 +118,59 @@ public class IndexManager implements Manager {
 		}
 	}
 
-	@Override
-	public List<File> getByPrefix(String prefix) {
-		return trie.valuesWithPrefix(prefix);
-	}
-
-	private <T> List<T> filterList(List<T> list, int limit) {
+	private <T> Set<T> filterSet(Set<T> list, int limit) {
 		Assert.isNoNegative(limit);
-		if (limit == 0) {
-			return Collections.emptyList();
+		if (limit == 0 || list == null || list.isEmpty()) {
+			return Collections.emptySet();
 		}
 
-		List<T> newList = new ArrayList<>();
-		for (int i = 0; i < limit && i < list.size(); i++) {
-			newList.add(list.get(i));
+		Set<T> newList = new HashSet<>();
+
+		int i = 0;
+		for (T t : list) {
+			if (i >= limit) {
+				break;
+			}
+			newList.add(t);
+			i++;
 		}
 
 		return newList;
 	}
 
 	@Override
-	public List<File> getByKey(String key, int limit) {
-		return filterList(getByKey(key), limit);
+	public Set<File> getByPrefix(String... prefixes) {
+		if (prefixes == null || prefixes.length == 0) {
+			return Collections.emptySet();
+		}
+		if (prefixes.length == 1) {
+			return trie.valuesWithPrefix(prefixes[0]);
+		}
+
+		final Map<File, Integer> countMap = new HashMap<>();
+		for (String prefix : prefixes) {
+			for (File f : trie.valuesWithPrefix(prefix)) {
+				Integer ct = countMap.get(f);
+				if (ct == null) {
+					ct = 0;
+				}
+				ct++;
+				countMap.put(f, ct);
+			}
+		}
+
+		Set<File> set = new HashSet<>();
+		for (Map.Entry<File, Integer> element : countMap.entrySet()) {
+			if (element.getValue() == prefixes.length) {
+				set.add(element.getKey());
+			}
+		}
+		return set;
 	}
 
 	@Override
-	public List<File> getByPrefix(String prefix, int limit) {
-		return filterList(getByPrefix(prefix), limit);
+	public Set<File> getByPrefix(int limit, String... prefixes) {
+		return filterSet(getByPrefix(prefixes), limit);
 	}
 
 }

@@ -1,8 +1,10 @@
 package org.loda.lalfred;
 
 import java.io.File;
-import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class Main {
 
@@ -19,15 +21,20 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		load("/Users/loda/Movies/movie");
-		
+		load("/Users/loda/Documents");
+
 		Scanner scanner = new Scanner(System.in);
 		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
 			if ("ct".equals(line)) {
 				System.out.println(manager.getIndexCount());
 			} else {
-				List<File> list = manager.getByPrefix(line, 10);
+				long start = System.nanoTime();
+				String[] tokens = StringUtils.split(line, " ");
+				Set<File> list = manager.getByPrefix(tokens);
+
+				long cost = System.nanoTime() - start;
+				System.out.println("cost " + cost / 1000 + " us");
 				System.out.println("size " + list.size());
 				System.out.println(list);
 			}
