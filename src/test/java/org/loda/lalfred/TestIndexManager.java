@@ -11,7 +11,7 @@ public class TestIndexManager {
 	public void testIndexManager() {
 		IndexManager manager = new IndexManager();
 		File f = new File("/Users/loda/Documents/book/数学和算法/编程之美.pdf");
-		manager.buildIndex(f);
+		manager.buildIndex(FileTypeUtils.recognize(f));
 		Set<File> list = manager.getByPrefix("美");
 
 		for (File file : list) {
