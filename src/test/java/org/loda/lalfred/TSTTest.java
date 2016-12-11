@@ -4,6 +4,15 @@ import org.junit.Test;
 
 public class TSTTest {
 
+	/**
+	 * 
+	 * java:[1] php:[2, 6] python:[3, 5] c#:[4] c++:[3] [c#, c++, c] [1, 3]
+	 * 
+	 */
+
+	/**
+	 * delete java:[1] php:[] python:[3, 5] c#:[4] c++:[3] [c#, c++, c] [1, 3]
+	 */
 	@Test
 	public void testTST() {
 		TST<Integer> tst = new TST<>();
@@ -17,20 +26,22 @@ public class TSTTest {
 		tst.put("c++", 3);
 		tst.put("c", 8);
 		tst.put("编程", 33);
-		
-		System.out.println(tst.get("java"));
-		System.out.println(tst.get("php"));
-		System.out.println(tst.get("python"));
-		System.out.println(tst.get("c#"));
-		System.out.println(tst.get("c++"));
 
-		System.out.println(tst.keysWithPrefix("c"));
-		
-		System.out.println(tst.valuesWithPrefix("java"));
+		System.out.println("java:" + tst.get("java"));
+		 tst.delete("p", 6);
 
-//		Assert.isNull(tst.longestPrefixOf("cc"));
-//		Assert.equal(tst.longestPrefixOf("c"), "c++");
-//		Assert.equal(tst.get("编程"), 33);
+		System.out.println("php:" + tst.get("php"));
+		System.out.println("python:" + tst.get("python"));
+		System.out.println("c#:" + tst.get("c#"));
+		System.out.println("c++:" + tst.get("c++"));
+
+		System.out.println(tst.keysWithPrefix("p"));
+
+		System.out.println(tst.valuesWithPrefix("p"));
+
+		// Assert.isNull(tst.longestPrefixOf("cc"));
+		// Assert.equal(tst.longestPrefixOf("c"), "c++");
+		// Assert.equal(tst.get("编程"), 33);
 	}
-	
+
 }

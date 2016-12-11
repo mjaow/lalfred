@@ -105,13 +105,38 @@ public class TST<V> {
 		return index >= key.length() - 1;
 	}
 
-	public void delete(String key) {
+	public void delete(String key, V value) {
 		Assert.notNull(key);
-		delete(lowerCase(key), root, 0);
+		root = delete(lowerCase(key), value, root, 0);
 	}
 
-	private void delete(String key, Node node, int index) {
-		// TODO
+	private Node delete(String key, V value, Node node, int index) {
+		if (node == null) {
+			return null;
+		}
+
+		if (key.isEmpty()) {
+			return null;
+		}
+
+		char c = key.charAt(index);
+		if (c > node.ch) {
+			node.right = delete(key, value, node.right, index);
+		} else if (c < node.ch) {
+			node.left = delete(key, value, node.left, index);
+		} else if (!reachEnd(key, index)) {
+			node.mid = delete(key, value, node.mid, index + 1);
+		} else if (node.val != null) {
+			node.val.remove(value);
+			if (node.val.isEmpty()) {
+				node.val = null;
+			}
+		}
+
+		if (node.left == null && node.right == null && (node.val == null || node.val.isEmpty())) {
+			node = null;
+		}
+		return node;
 	}
 
 	public boolean contains(String key) {

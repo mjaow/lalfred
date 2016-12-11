@@ -14,6 +14,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.loda.lalfred.util.Assert;
 import org.loda.lalfred.util.Pinyin;
@@ -22,17 +24,23 @@ import com.google.common.collect.Lists;
 
 public class IndexManager implements Manager {
 
-	// private final File indexFile = new File("d://.lafred");
-
 	private TST<File> fileTrie = new TST<>();
 
 	private TST<File> contentTrie = new TST<>();
 
 	private final LongAdder count = new LongAdder();
 
-	private final BlockingQueue<File> queue = new LinkedBlockingQueue<>();
+	private final BlockingQueue<File> buildIndexQ = new LinkedBlockingQueue<>();
+
+	private final BlockingQueue<File> removeIndexQ = new LinkedBlockingQueue<>();
 
 	private final ExecutorService buildIndexService = Executors.newSingleThreadExecutor();
+
+	private final ExecutorService removeIndexService = Executors.newSingleThreadExecutor();
+
+	private final Lock fileIndexLock = new ReentrantLock();
+
+	private final Lock contentIndexLock = new ReentrantLock();
 
 	// private final ExecutorService fileIndexService =
 	// Executors.newSingleThreadExecutor();
@@ -44,25 +52,65 @@ public class IndexManager implements Manager {
 			.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 	public IndexManager() {
-		// if (!indexFile.exists()) {
-		// try {
-		// boolean r = indexFile.createNewFile();
-		// if (!r) {
-		// throw new RuntimeException("file not creat");
-		// }
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		// }
 
 		buildIndexService.execute(() -> {
 			getAndBuildIndex();
 		});
+		removeIndexService.execute(() -> {
+			getAndRemoveIndex();
+		});
+
+	}
+
+	private void getAndRemoveIndex() {
+		while (true) {
+			try {
+				File f = removeIndexQ.take();
+				removeIndex(FileTypeUtils.recognize(f));
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void removeIndex(Doc doc) {
+		removeFileIndex(doc);
+		removeContentIndex(doc);
+		count.decrement();
+
+	}
+
+	private void removeContentIndex(Doc doc) {
+		contentIndexLock.lock();
+		try {
+			removeIndex(contentTrie, doc, true);
+		} finally {
+			contentIndexLock.unlock();
+		}
+	}
+
+	private void removeFileIndex(Doc doc) {
+		fileIndexLock.lock();
+		try {
+			fileTrie.delete(doc.getFileName(), doc.getFile());
+			removeIndex(fileTrie, doc, false);
+		} finally {
+			fileIndexLock.unlock();
+		}
 	}
 
 	public void putToFilePool(File f) {
 		try {
-			queue.put(f);
+			buildIndexQ.put(f);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void waitForRemoveIndex(File f) {
+		try {
+			removeIndexQ.put(f);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -85,27 +133,45 @@ public class IndexManager implements Manager {
 	public void buildIndex(Doc doc) {
 		buildFileIndex(doc);
 		buildContentIndex(doc);
-
 		count.increment();
-
 	}
 
 	private void buildFileIndex(Doc doc) {
-		fileTrie.put(doc.getFileName(), doc.getFile());
-		buildIndex(fileTrie, doc, false);
+		fileIndexLock.lock();
+		try {
+			fileTrie.put(doc.getFileName(), doc.getFile());
+			buildIndex(fileTrie, doc, false);
+		} finally {
+			fileIndexLock.unlock();
+		}
 	}
 
 	private void buildContentIndex(Doc doc) {
-		buildIndex(contentTrie, doc, true);
+		contentIndexLock.lock();
+		try {
+			buildIndex(contentTrie, doc, true);
+		} finally {
+			contentIndexLock.unlock();
+		}
 	}
 
 	private void buildIndex(TST<File> trie, Doc doc, boolean fullText) {
 		for (Token token : doc.getTokens(fullText)) {
 			if (token.isChinese()) {
 				String s = getPinyin(token.getText());
-				fileTrie.put(s, doc.getFile());
+				trie.put(s, doc.getFile());
 			}
-			fileTrie.put(token.getText(), doc.getFile());
+			trie.put(token.getText(), doc.getFile());
+		}
+	}
+
+	private void removeIndex(TST<File> trie, Doc doc, boolean fullText) {
+		for (Token token : doc.getTokens(fullText)) {
+			if (token.isChinese()) {
+				String s = getPinyin(token.getText());
+				trie.delete(s, doc.getFile());
+			}
+			trie.delete(token.getText(), doc.getFile());
 		}
 	}
 
@@ -116,7 +182,7 @@ public class IndexManager implements Manager {
 	private void getAndBuildIndex() {
 		while (true) {
 			try {
-				File f = queue.take();
+				File f = buildIndexQ.take();
 				buildIndex(FileTypeUtils.recognize(f));
 
 			} catch (InterruptedException e) {
