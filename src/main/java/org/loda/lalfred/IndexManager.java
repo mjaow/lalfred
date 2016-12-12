@@ -100,7 +100,7 @@ public class IndexManager implements Manager {
 		}
 	}
 
-	public void putToFilePool(File f) {
+	public void waitForBuildIndex(File f) {
 		try {
 			buildIndexQ.put(f);
 		} catch (InterruptedException e) {

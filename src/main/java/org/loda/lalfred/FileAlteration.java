@@ -15,7 +15,6 @@ public class FileAlteration {
 	public FileAlteration(Manager manager) {
 		monitor = new FileAlterationMonitor(5000);
 		this.manager = manager;
-		start();
 	}
 
 	public void start() {
@@ -26,14 +25,20 @@ public class FileAlteration {
 		}
 	}
 
-	public void register(File file) {
+	public void register(String path) {
+		File file = new File(path);
+		if (!file.exists()) {
+			stop();
+			throw new IllegalArgumentException(path + " not exists");
+		}
+
 		FileAlterationObserver observer = new FileAlterationObserver(file);
 		observer.addListener(new FileAlterationListenerAdaptor() {
 
 			@Override
 			public void onDirectoryCreate(File directory) {
 				if (isExpectedDir(directory)) {
-					System.out.println("目录" + directory + "创建");
+					// System.out.println("目录" + directory + "创建");
 				}
 			}
 
@@ -44,29 +49,28 @@ public class FileAlteration {
 			@Override
 			public void onDirectoryDelete(File directory) {
 				if (isExpectedDir(directory)) {
-					System.out.println("目录" + directory + "删除");
+					// manager.waitForRemoveIndex(directory);
+					// System.out.println("目录" + directory + "删除");
 				}
 			}
 
 			@Override
 			public void onFileCreate(File file) {
 				if (isExpected(file)) {
-					manager.putToFilePool(file);
+					manager.waitForBuildIndex(file);
 				}
 			}
 
 			@Override
 			public void onFileChange(File file) {
 				if (isExpected(file)) {
-					System.out.println("文件" + file + "修改");
+					// System.out.println("文件" + file + "修改");
 				}
 			}
 
 			@Override
 			public void onFileDelete(File file) {
-				if (isExpected(file)) {
-					System.out.println("文件" + file + "删除");
-				}
+				manager.waitForRemoveIndex(file);
 			}
 
 			private boolean isExpected(File file) {

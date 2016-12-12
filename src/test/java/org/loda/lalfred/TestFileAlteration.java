@@ -15,8 +15,10 @@ public class TestFileAlteration {
 
 		FileAlteration controller = new FileAlteration(null);
 
-		controller.register(new File("/Users/loda/Documents"));
-		controller.register(new File("/Users/loda/Movies"));
+		controller.register("/Users/loda/Documents");
+		controller.register("/Users/loda/Movies");
+
+		controller.start();
 
 		Utils.await();
 	}

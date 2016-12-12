@@ -40,7 +40,7 @@ public class ProducerConsumerSearcher implements Searcher {
 				if (f.isDirectory()) {
 					searchRecursive(f);
 				} else if (!manager.checkIndexed(f)) {
-					manager.putToFilePool(f);
+					manager.waitForBuildIndex(f);
 				}
 			}
 		}

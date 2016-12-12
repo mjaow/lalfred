@@ -5,7 +5,9 @@ import java.util.Set;
 
 public interface Manager {
 
-	public void putToFilePool(File f);
+	public void waitForBuildIndex(File f);
+
+	public void waitForRemoveIndex(File f);
 
 	public Set<File> getByPrefix(String... prefixs);
 

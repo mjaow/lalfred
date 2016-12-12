@@ -61,6 +61,11 @@ public class Doc {
 		} else {
 			text = file.getName();
 		}
+
+		if (text == null) {
+			return Collections.emptyList();
+		}
+
 		List<Token> list = new ArrayList<>();
 		IKSegmenter seg = new IKSegmenter(new StringReader(text), true);
 		try {
@@ -80,7 +85,7 @@ public class Doc {
 		return file;
 	}
 
-	public String getFileName(){
+	public String getFileName() {
 		return file.getName();
 	}
 }

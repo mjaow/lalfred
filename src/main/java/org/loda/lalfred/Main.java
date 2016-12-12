@@ -19,9 +19,14 @@ public class Main {
 	private static final Searcher searcher = new ProducerConsumerSearcher(manager);
 	// private static final Searcher searcher = new FJSearcher(manager);
 
-	public static void main(String[] args) {
+	private static final FileAlteration watcher = new FileAlteration(manager);
 
-		load("/Users/loda");
+	public static void main(String[] args) {
+		watcher.start();
+
+		watcher.register("/Users/loda/Documents");
+
+		load("/Users/loda/Documents");
 
 		Scanner scanner = new Scanner(System.in);
 		while (scanner.hasNextLine()) {
@@ -41,6 +46,7 @@ public class Main {
 		}
 		scanner.close();
 
+		watcher.stop();
 	}
 
 	private static void load(String path) {
