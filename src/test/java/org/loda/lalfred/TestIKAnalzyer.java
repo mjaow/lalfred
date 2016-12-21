@@ -11,7 +11,7 @@ public class TestIKAnalzyer {
 	// dsp|投放|引擎|设计|1.0-|完整版|docx|
 	@Test
 	public void testIk() {
-		IKSegmenter seg = new IKSegmenter(new StringReader("name_world"), true);
+		IKSegmenter seg = new IKSegmenter(new StringReader("4.4.3　并行连接可能让人“感觉”更快一些 ......................................................................95"), true);
 
 		try {
 			Lexeme lexeme;

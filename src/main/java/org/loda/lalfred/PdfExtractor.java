@@ -6,7 +6,9 @@ public class PdfExtractor implements Extractor {
 
 	@Override
 	public String extract(File file) {
-		// TODO Auto-generated method stub
+
+//		Parser parser = new AutoDetectParser();
+//		parser.parse(arg0, arg1, arg2, arg3);
 		return null;
 	}
 

@@ -128,15 +128,36 @@ public class TST<V> {
 			node.mid = delete(key, value, node.mid, index + 1);
 		} else if (node.val != null) {
 			node.val.remove(value);
-			if (node.val.isEmpty()) {
-				node.val = null;
-			}
 		}
 
-		if (node.left == null && node.right == null && (node.val == null || node.val.isEmpty())) {
+		if (!hasChid(node) && !hasValue(node)) {
 			node = null;
 		}
 		return node;
+	}
+
+	private boolean hasValue(Node node) {
+		if (node == null) {
+			return false;
+		}
+
+		if (node.val == null || node.val.isEmpty()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private boolean hasChid(Node node) {
+		if (node == null) {
+			return false;
+		}
+
+		if (node.mid != null || node.left != null || node.right != null) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public boolean contains(String key) {

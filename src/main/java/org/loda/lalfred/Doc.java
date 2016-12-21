@@ -7,51 +7,28 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.tika.Tika;
+import org.apache.tika.exception.TikaException;
 import org.wltea.analyzer.core.IKSegmenter;
 import org.wltea.analyzer.core.Lexeme;
 
 public class Doc {
 
-	private static final int PDF = 1;
-
-	private static final int TEXT = 2;
-
-	private static final int WORD = 3;
-
-	private final int type;
-
 	private final File file;
 
-	private final Extractor extractor;
+	private Tika tika = new Tika();
 
 	public Doc(File file) {
 		this.file = file;
-		type = TEXT;
-		if (isPdf()) {
-			extractor = new PdfExtractor();
-		} else if (isText()) {
-			extractor = new TextExtractor();
-		} else if (isWord()) {
-			extractor = new WordExtractor();
-		} else {
-			extractor = new TextExtractor();
-		}
-	}
-
-	public boolean isPdf() {
-		return type == PDF;
-	}
-
-	public boolean isText() {
-		return type == TEXT;
-	}
-
-	public boolean isWord() {
-		return type == WORD;
 	}
 
 	private String extractContent() {
-		return extractor.extract(file);
+		try {
+			System.out.println(file.getName());
+			return tika.parseToString(file);
+		} catch (IOException | TikaException e) {
+			return null;
+		}
 	}
 
 	public List<Token> getTokens(boolean fullText) {
